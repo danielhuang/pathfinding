@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use pathfinding::prelude::*;
 use rand::{rngs, Rng};
 
@@ -52,10 +53,7 @@ fn all_paths() {
                     let other_path = build_path(&target, &paths);
                     // There might be several paths, but we know that internally we use the
                     // same algorithm so the comparison holds.
-                    assert_eq!(
-                        path, other_path,
-                        "path {start} -> {target} differ in {network:?}: {path:?} vs {other_path:?}"
-                    );
+                    assert_eq!(path, other_path, "path {start} -> {target} differ in {network:?}: {path:?} vs {other_path:?}");
                 }
             } else {
                 assert!(
@@ -102,4 +100,21 @@ fn partial_paths() {
             }
         }
     }
+}
+
+#[test]
+fn dijkstra_reach_test() {
+    let reach = dijkstra_reach(&0, |prev| vec![(prev + 1, 1), (prev * 2, *prev)])
+        .take_while(|x| x.total_cost < 100)
+        .collect_vec();
+    // the total cost should equal to the node's value, since the starting node is 0 and the cost to reach a successor node is equal to the increase in the node's value
+    assert!(reach.iter().all(|x| x.node == x.total_cost));
+    assert!((0..100).all(|x| reach.iter().any(|y| x == y.total_cost)));
+
+    // dijkstra_reach should return reachable nodes in order of cost
+    assert!(reach
+        .iter()
+        .map(|x| x.total_cost)
+        .tuple_windows()
+        .all(|(a, b)| b >= a));
 }
