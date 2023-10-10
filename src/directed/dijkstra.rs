@@ -320,6 +320,7 @@ impl<K: Ord> Ord for SmallestHolder<K> {
 /// Struct returned by [`dijkstra_reach`](crate::directed::dijkstra::dijkstra_reach).
 pub struct DijkstraReachable<N, C, FN> {
     to_see: BinaryHeap<SmallestHolder<C>>,
+    to_see_counts: FxHashMap<usize, usize>,
     parents: FxIndexMap<N, (usize, C)>,
     total_costs: FxHashMap<N, C>,
     successors: FN,
@@ -347,9 +348,11 @@ where
     type Item = DijkstraReachableItem<N, C>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut item = None;
-
-        if let Some(SmallestHolder { cost, index }) = self.to_see.pop() {
+        while let Some(SmallestHolder { cost, index }) = self.to_see.pop() {
+            let item;
+            let count = self.to_see_counts.get_mut(&index).unwrap();
+            *count -= 1;
+            let count = *count;
             let successors = {
                 let (node, (parent_index, _)) = self.parents.get_index(index).unwrap();
                 item = Some(DijkstraReachableItem {
@@ -383,10 +386,15 @@ where
                     cost: new_cost,
                     index: n,
                 });
+                *self.to_see_counts.entry(n).or_insert(0) += 1;
+            }
+            if count == 0 {
+                self.to_see_counts.remove(&index);
+                return item;
             }
         }
 
-        item
+        None
     }
 }
 
@@ -411,8 +419,12 @@ where
     let mut total_costs = FxHashMap::default();
     total_costs.insert(start.clone(), Zero::zero());
 
+    let mut to_see_counts = FxHashMap::default();
+    to_see_counts.insert(0, 1);
+
     DijkstraReachable {
         to_see,
+        to_see_counts,
         parents,
         total_costs,
         successors,
