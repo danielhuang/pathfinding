@@ -63,18 +63,22 @@ use std::usize;
 ///                  |&p| p == GOAL);
 /// assert_eq!(result.expect("no path found").len(), 5);
 /// ```
-pub fn bfs<N, FN, IN, FS>(start: &N, successors: FN, success: FS) -> Option<Vec<N>>
+pub fn bfs<N, FN, IN, FS>(
+    starts: impl IntoIterator<Item = N>,
+    successors: FN,
+    success: FS,
+) -> Option<Vec<N>>
 where
     N: Eq + Hash + Clone,
     FN: FnMut(&N) -> IN,
     IN: IntoIterator<Item = N>,
     FS: FnMut(&N) -> bool,
 {
-    bfs_core(start, successors, success, true)
+    bfs_core(starts, successors, success, true)
 }
 
 fn bfs_core<N, FN, IN, FS>(
-    start: &N,
+    starts: impl IntoIterator<Item = N>,
     mut successors: FN,
     mut success: FS,
     check_first: bool,
@@ -85,12 +89,14 @@ where
     IN: IntoIterator<Item = N>,
     FS: FnMut(&N) -> bool,
 {
-    if check_first && success(start) {
-        return Some(vec![start.clone()]);
-    }
     let mut i = 0;
     let mut parents: FxIndexMap<N, usize> = FxIndexMap::default();
-    parents.insert(start.clone(), usize::max_value());
+    for start in starts {
+        if check_first && success(&start) {
+            return Some(vec![start.clone()]);
+        }
+        parents.insert(start.clone(), usize::max_value());
+    }
     while let Some((node, _)) = parents.get_index(i) {
         for successor in successors(node) {
             if success(&successor) {
@@ -115,13 +121,13 @@ where
 /// Except the start node which will be included both at the beginning and the end of
 /// the path, a node will never be included twice in the path as determined
 /// by the `Eq` relationship.
-pub fn bfs_loop<N, FN, IN>(start: &N, successors: FN) -> Option<Vec<N>>
+pub fn bfs_loop<N, FN, IN>(start: N, successors: FN) -> Option<Vec<N>>
 where
     N: Eq + Hash + Clone,
     FN: FnMut(&N) -> IN,
     IN: IntoIterator<Item = N>,
 {
-    bfs_core(start, successors, |n| n == start, false)
+    bfs_core([start.clone()], successors, |n| n == &start, false)
 }
 
 /// Visit all nodes that are reachable from a start node. The node will be visited
@@ -156,14 +162,19 @@ where
 /// assert_eq!(it.next(), Some(8));  // ((1*2)*2)*2
 /// assert_eq!(it.next(), Some(12)); // ((1*2)*2)*3
 /// ```
-pub fn bfs_reach<N, FN, IN>(start: N, successors: FN) -> BfsReachable<N, FN>
+pub fn bfs_reach<N, FN, IN>(
+    starts: impl IntoIterator<Item = N>,
+    successors: FN,
+) -> BfsReachable<N, FN>
 where
     N: Eq + Hash + Clone,
     FN: FnMut(&N) -> IN,
     IN: IntoIterator<Item = N>,
 {
     let mut seen = FxIndexSet::default();
-    seen.insert(start);
+    for start in starts {
+        seen.insert(start);
+    }
     BfsReachable {
         i: 0,
         seen,

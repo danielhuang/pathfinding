@@ -39,7 +39,7 @@ mod ex1 {
     fn dijkstra_ok() {
         for target in 0..9 {
             assert_eq!(
-                dijkstra(&1, successors, |&node| node == target),
+                dijkstra([1], successors, |&node| node == target),
                 expected(target)
             );
         }
@@ -69,7 +69,7 @@ mod ex1 {
 
     #[test]
     fn djkstra_loop_ok() {
-        assert_eq!(dijkstra(&1, |_| vec![(1, 1)], |&n| n == 2), None);
+        assert_eq!(dijkstra([1], |_| vec![(1, 1)], |&n| n == 2), None);
     }
 
     #[test]
@@ -80,15 +80,16 @@ mod ex1 {
     #[test]
     fn bfs_loops() {
         let successors = |n: &u8| successors(n).map(|(n, _)| n);
-        assert_eq!(bfs_loop(&0, successors), Some(vec![0, 1, 0]));
-        assert_eq!(bfs_loop(&1, successors), Some(vec![1, 0, 1]));
-        assert_eq!(bfs_loop(&2, successors), Some(vec![2, 5, 1, 0, 2]));
-        assert_eq!(bfs_loop(&8, successors), None);
+        assert_eq!(bfs_loop(0, successors), Some(vec![0, 1, 0]));
+        assert_eq!(bfs_loop(1, successors), Some(vec![1, 0, 1]));
+        assert_eq!(bfs_loop(2, successors), Some(vec![2, 5, 1, 0, 2]));
+        assert_eq!(bfs_loop(8, successors), None);
     }
 
     #[test]
     fn bfs_reach_is_fused() {
-        let mut it = bfs_reach(1, |&n| vec![n * 2, n * 3].into_iter().filter(|&x| x < 15)).skip(1);
+        let mut it =
+            bfs_reach([1], |&n| vec![n * 2, n * 3].into_iter().filter(|&x| x < 15)).skip(1);
         for _ in 0..7 {
             assert!(it.next().is_some());
         }
@@ -99,7 +100,7 @@ mod ex1 {
 
     #[test]
     fn bfs_remaining_nodes() {
-        let mut it = bfs_reach(1, |&n| vec![n * 2, n * 3].into_iter().filter(|&x| x < 15));
+        let mut it = bfs_reach([1], |&n| vec![n * 2, n * 3].into_iter().filter(|&x| x < 15));
         assert_eq!(1, it.remaining_nodes_low_bound()); // [1]
         assert_eq!(Some(1), it.next());
         assert_eq!(2, it.remaining_nodes_low_bound()); // [2, 3]
@@ -308,7 +309,7 @@ mod ex2 {
         const GOAL: (usize, usize) = (6, 3);
         let mut counter = 0;
         let (path, cost) = dijkstra(
-            &(2, 3),
+            [(2, 3)],
             |n| {
                 counter += 1;
                 successors(n)
@@ -325,7 +326,7 @@ mod ex2 {
     fn bfs_path_ok() {
         const GOAL: (usize, usize) = (6, 3);
         let path = bfs(
-            &(2, 3),
+            [(2, 3)],
             |n| successors(n).into_iter().map(|(n, _)| n),
             |n| n == &GOAL,
         )
@@ -390,7 +391,7 @@ mod ex2 {
     #[test]
     fn dijkstra_no_path() {
         const GOAL: (usize, usize) = (1, 1);
-        assert_eq!(dijkstra(&(2, 3), successors, |n| n == &GOAL), None);
+        assert_eq!(dijkstra([(2, 3)], successors, |n| n == &GOAL), None);
     }
 
     #[test]
@@ -398,7 +399,7 @@ mod ex2 {
         const GOAL: (usize, usize) = (1, 1);
         assert_eq!(
             bfs(
-                &(2, 3),
+                [(2, 3)],
                 |n| successors(n).into_iter().map(|(n, _)| n),
                 |n| n == &GOAL,
             ),

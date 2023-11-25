@@ -307,7 +307,7 @@ where
             return;
         }
         while capacity > Zero::zero() {
-            let Some(path) = bfs(&from, |&n| self.flows_from(n).into_iter(), |&n| n == to) else {
+            let Some(path) = bfs([from], |&n| self.flows_from(n).into_iter(), |&n| n == to) else {
                 unreachable!("no flow to cancel");
             };
             let path = path

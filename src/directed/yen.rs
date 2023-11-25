@@ -110,7 +110,7 @@ where
     IN: IntoIterator<Item = (N, C)>,
     FS: FnMut(&N) -> bool,
 {
-    let Some((n, c)) = dijkstra_internal(start, &mut successors, &mut success) else {
+    let Some((n, c)) = dijkstra_internal([start.clone()], &mut successors, &mut success) else {
         return vec![];
     };
 
@@ -151,7 +151,7 @@ where
 
             // Let us find the spur path from the spur node to the sink using.
             if let Some((spur_path, _)) =
-                dijkstra_internal(spur_node, &mut filtered_successor, &mut success)
+                dijkstra_internal([spur_node.clone()], &mut filtered_successor, &mut success)
             {
                 let nodes: Vec<N> = root_path.iter().cloned().chain(spur_path).collect();
                 // If we have found the same path before, we will not add it.

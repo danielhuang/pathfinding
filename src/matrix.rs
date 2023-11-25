@@ -625,7 +625,7 @@ impl<C> Matrix<C> {
     where
         P: FnMut((usize, usize)) -> bool,
     {
-        bfs_reach(start, |&n| {
+        bfs_reach([start], |&n| {
             self.neighbours(n, diagonals)
                 .filter(|&n| predicate(n))
                 .collect::<Vec<_>>()

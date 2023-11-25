@@ -1,5 +1,5 @@
 error: no rules expected the token `,`
- --> tests/ui/matrix.rs:7:21
+ --> ~/Documents/aod/pathfinding/tests/ui/matrix.rs:7:21
   |
 7 |     let _ = matrix!(,);
   |                     ^ no rules expected this token in macro call
@@ -7,13 +7,13 @@ error: no rules expected the token `,`
   = note: while trying to match end of macro
 
 error: no rules expected the token `,`
- --> tests/ui/matrix.rs:8:38
-  |
-8 |     let _ = matrix!( [1, 2], [3, 4], ,);
-  |                                      ^ no rules expected this token in macro call
-  |
+   --> ~/Documents/aod/pathfinding/tests/ui/matrix.rs:8:38
+    |
+8   |     let _ = matrix!( [1, 2], [3, 4], ,);
+    |                                      ^ no rules expected this token in macro call
+    |
 note: while trying to match meta-variable `$b:expr`
- --> src/matrix.rs
-  |
-  |     ($a:expr $(, $b: expr)*$(,)?) => {{
-  |                  ^^^^^^^^
+   --> ~/Documents/aod/pathfinding/src/matrix.rs:734:18
+    |
+734 |     ($a:expr $(, $b: expr)*$(,)?) => {{
+    |                  ^^^^^^^^

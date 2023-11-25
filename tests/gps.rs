@@ -98,7 +98,7 @@ fn test_gps() {
     );
 
     let r = dijkstra(
-        &start,
+        [start],
         |city| successor_distances[city].clone(),
         |city| city == &goal,
     );

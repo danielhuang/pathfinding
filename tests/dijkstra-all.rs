@@ -33,10 +33,10 @@ fn all_paths() {
     const SIZE: usize = 30;
     let network = build_network(SIZE);
     for start in 0..SIZE {
-        let paths = dijkstra_all(&start, neighbours(network.clone()));
+        let paths = dijkstra_all([start], neighbours(network.clone()));
         for target in 0..SIZE {
             if let Some((path, cost)) =
-                dijkstra(&start, neighbours(network.clone()), |&n| n == target)
+                dijkstra([start], neighbours(network.clone()), |&n| n == target)
             {
                 if start == target {
                     assert!(
@@ -72,7 +72,7 @@ fn partial_paths() {
     const SIZE: usize = 100;
     let network = build_network(SIZE);
     for start in 0..SIZE {
-        let (paths, reached) = dijkstra_partial(&start, neighbours(network.clone()), |&n| {
+        let (paths, reached) = dijkstra_partial([start], neighbours(network.clone()), |&n| {
             start != 0 && n != 0 && n != start && n % start == 0
         });
         if let Some(target) = reached {
@@ -81,7 +81,7 @@ fn partial_paths() {
             // paths variable is up-to-date as the algorithm stopped prematurely.
             let cost = paths[&target].1;
             let (path, dcost) =
-                dijkstra(&start, neighbours(network.clone()), |&n| n == target).unwrap();
+                dijkstra([start], neighbours(network.clone()), |&n| n == target).unwrap();
             assert_eq!(
                 cost, dcost,
                 "costs {start} -> {target} differ in {network:?}"
@@ -96,7 +96,7 @@ fn partial_paths() {
         } else if start != 0 && start <= (SIZE - 1) / 2 {
             for target in 1..(SIZE / start) {
                 assert!(
-                    dijkstra(&start, neighbours(network.clone()), |&n| n == target).is_none(),
+                    dijkstra([start], neighbours(network.clone()), |&n| n == target).is_none(),
                     "path {start} -> {target} found in {network:?}"
                 );
             }
@@ -106,7 +106,7 @@ fn partial_paths() {
 
 #[test]
 fn dijkstra_reach_numbers() {
-    let reach = dijkstra_reach(&0, |prev, _| vec![(prev + 1, 1), (prev * 2, *prev)])
+    let reach = dijkstra_reach([0], |prev, _| vec![(prev + 1, 1), (prev * 2, *prev)])
         .take_while(|x| x.total_cost < 100)
         .collect_vec();
     // the total cost should equal to the node's value, since the starting node is 0 and the cost to reach a successor node is equal to the increase in the node's value
@@ -134,7 +134,7 @@ fn dijkstra_reach_graph() {
 
     let mut costs = HashMap::new();
 
-    let reach = dijkstra_reach(&"A", |prev, cost| {
+    let reach = dijkstra_reach(["A"], |prev, cost| {
         costs.insert(*prev, cost);
         graph[prev].clone()
     })

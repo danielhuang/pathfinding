@@ -396,7 +396,7 @@ impl Grid {
     where
         P: FnMut((usize, usize)) -> bool,
     {
-        bfs_reach(start, |&n| {
+        bfs_reach([start], |&n| {
             self.neighbours(n)
                 .into_iter()
                 .filter(|&n| predicate(n))
