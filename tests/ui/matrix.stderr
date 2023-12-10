@@ -13,7 +13,7 @@ error: no rules expected the token `,`
     |                                      ^ no rules expected this token in macro call
     |
 note: while trying to match meta-variable `$b:expr`
-   --> ~/Documents/aod/pathfinding/src/matrix.rs:734:18
+   --> ~/Documents/aod/pathfinding/src/matrix.rs:735:18
     |
-734 |     ($a:expr $(, $b: expr)*$(,)?) => {{
+735 |     ($a:expr $(, $b: expr)*$(,)?) => {{
     |                  ^^^^^^^^

@@ -4,6 +4,7 @@
 use super::reverse_path;
 use crate::{FxIndexMap, FxIndexSet};
 use indexmap::map::Entry::Vacant;
+use rustc_hash::FxHashMap;
 use std::hash::Hash;
 use std::iter::FusedIterator;
 use std::usize;
@@ -172,19 +173,23 @@ where
     IN: IntoIterator<Item = N>,
 {
     let mut seen = FxIndexSet::default();
+    let mut dists = FxHashMap::default();
     for start in starts {
-        seen.insert(start);
+        seen.insert(start.clone());
+        dists.insert(start, 0);
     }
     BfsReachable {
         i: 0,
         seen,
         successors,
+        dists,
     }
 }
 
 /// Struct returned by [`bfs_reach`](crate::directed::bfs::bfs_reach).
 pub struct BfsReachable<N, FN> {
     i: usize,
+    dists: FxHashMap<N, usize>,
     seen: FxIndexSet<N>,
     successors: FN,
 }
@@ -204,15 +209,17 @@ where
     FN: FnMut(&N) -> IN,
     IN: IntoIterator<Item = N>,
 {
-    type Item = N;
+    type Item = (N, usize);
 
     fn next(&mut self) -> Option<Self::Item> {
         let n = self.seen.get_index(self.i)?.clone();
+        let dist = self.dists[&n];
         for s in (self.successors)(&n) {
-            self.seen.insert(s);
+            self.seen.insert(s.clone());
+            self.dists.insert(s, dist + 1);
         }
         self.i += 1;
-        Some(n)
+        Some((n, dist))
     }
 }
 

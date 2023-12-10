@@ -402,6 +402,7 @@ impl Grid {
                 .filter(|&n| predicate(n))
                 .collect::<Vec<_>>()
         })
+        .map(|x| x.0)
         .collect()
     }
 

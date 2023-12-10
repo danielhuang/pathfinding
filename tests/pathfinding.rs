@@ -102,21 +102,21 @@ mod ex1 {
     fn bfs_remaining_nodes() {
         let mut it = bfs_reach([1], |&n| vec![n * 2, n * 3].into_iter().filter(|&x| x < 15));
         assert_eq!(1, it.remaining_nodes_low_bound()); // [1]
-        assert_eq!(Some(1), it.next());
+        assert_eq!(Some((1, 0)), it.next());
         assert_eq!(2, it.remaining_nodes_low_bound()); // [2, 3]
-        assert_eq!(Some(2), it.next());
+        assert_eq!(Some((2, 1)), it.next());
         assert_eq!(3, it.remaining_nodes_low_bound()); // [3, 4, 6]
-        assert_eq!(Some(3), it.next());
+        assert_eq!(Some((3, 1)), it.next());
         assert_eq!(3, it.remaining_nodes_low_bound()); // [4, 6, 9]
-        assert_eq!(Some(4), it.next());
+        assert_eq!(Some((4, 2)), it.next());
         assert_eq!(4, it.remaining_nodes_low_bound()); // [6, 9, 8, 12]
-        assert_eq!(Some(6), it.next());
+        assert_eq!(Some((6, 2)), it.next());
         assert_eq!(3, it.remaining_nodes_low_bound()); // [9, 8, 12]
-        assert_eq!(Some(9), it.next());
+        assert_eq!(Some((9, 2)), it.next());
         assert_eq!(2, it.remaining_nodes_low_bound()); // [8, 12]
-        assert_eq!(Some(8), it.next());
+        assert_eq!(Some((8, 3)), it.next());
         assert_eq!(1, it.remaining_nodes_low_bound()); // [12]
-        assert_eq!(Some(12), it.next());
+        assert_eq!(Some((12, 3)), it.next());
         assert_eq!(0, it.remaining_nodes_low_bound()); // []
         assert_eq!(None, it.next());
     }
