@@ -77,7 +77,7 @@ pub fn dijkstra<N, C, FN, IN, FS>(
 where
     N: Eq + Hash + Clone,
     C: Zero + Ord + Copy,
-    FN: FnMut(&N) -> IN,
+    FN: FnMut(&N, C) -> IN,
     IN: IntoIterator<Item = (N, C)>,
     FS: FnMut(&N) -> bool,
 {
@@ -92,7 +92,7 @@ pub(crate) fn dijkstra_internal<N, C, FN, IN, FS>(
 where
     N: Eq + Hash + Clone,
     C: Zero + Ord + Copy,
-    FN: FnMut(&N) -> IN,
+    FN: FnMut(&N, C) -> IN,
     IN: IntoIterator<Item = (N, C)>,
     FS: FnMut(&N) -> bool,
 {
@@ -149,7 +149,7 @@ pub fn dijkstra_all<N, C, FN, IN>(
 where
     N: Eq + Hash + Clone,
     C: Zero + Ord + Copy,
-    FN: FnMut(&N) -> IN,
+    FN: FnMut(&N, C) -> IN,
     IN: IntoIterator<Item = (N, C)>,
 {
     dijkstra_partial(starts, successors, |_| false).0
@@ -180,7 +180,7 @@ pub fn dijkstra_partial<N, C, FN, IN, FS>(
 where
     N: Eq + Hash + Clone,
     C: Zero + Ord + Copy,
-    FN: FnMut(&N) -> IN,
+    FN: FnMut(&N, C) -> IN,
     IN: IntoIterator<Item = (N, C)>,
     FS: FnMut(&N) -> bool,
 {
@@ -203,7 +203,7 @@ fn run_dijkstra<N, C, FN, IN, FS>(
 where
     N: Eq + Hash + Clone,
     C: Zero + Ord + Copy,
-    FN: FnMut(&N) -> IN,
+    FN: FnMut(&N, C) -> IN,
     IN: IntoIterator<Item = (N, C)>,
     FS: FnMut(&N) -> bool,
 {
@@ -219,12 +219,12 @@ where
     let mut target_reached = None;
     while let Some(SmallestHolder { cost, index }) = to_see.pop() {
         let successors = {
-            let (node, _) = parents.get_index(index).unwrap();
+            let (node, (_, cost)) = parents.get_index(index).unwrap();
             if stop(node) {
                 target_reached = Some(index);
                 break;
             }
-            successors(node)
+            successors(node, *cost)
         };
         for (successor, move_cost) in successors {
             let new_cost = cost + move_cost;

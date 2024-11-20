@@ -17,8 +17,8 @@ fn build_network(size: usize) -> Matrix<usize> {
     network
 }
 
-fn neighbours(network: Matrix<usize>) -> impl FnMut(&usize) -> Vec<(usize, usize)> {
-    move |&a| {
+fn neighbours(network: Matrix<usize>) -> impl FnMut(&usize, usize) -> Vec<(usize, usize)> {
+    move |&a, _| {
         (0..network.rows)
             .filter_map(|b| match network[(a, b)] {
                 0 => None,

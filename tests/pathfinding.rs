@@ -39,7 +39,7 @@ mod ex1 {
     fn dijkstra_ok() {
         for target in 0..9 {
             assert_eq!(
-                dijkstra([1], successors, |&node| node == target),
+                dijkstra([1], |n, _| successors(n), |&node| node == target),
                 expected(target)
             );
         }
@@ -69,7 +69,7 @@ mod ex1 {
 
     #[test]
     fn djkstra_loop_ok() {
-        assert_eq!(dijkstra([1], |_| vec![(1, 1)], |&n| n == 2), None);
+        assert_eq!(dijkstra([1], |_, _| vec![(1, 1)], |&n| n == 2), None);
     }
 
     #[test]
@@ -310,7 +310,7 @@ mod ex2 {
         let mut counter = 0;
         let (path, cost) = dijkstra(
             [(2, 3)],
-            |n| {
+            |n, _| {
                 counter += 1;
                 successors(n)
             },
@@ -391,7 +391,10 @@ mod ex2 {
     #[test]
     fn dijkstra_no_path() {
         const GOAL: (usize, usize) = (1, 1);
-        assert_eq!(dijkstra([(2, 3)], successors, |n| n == &GOAL), None);
+        assert_eq!(
+            dijkstra([(2, 3)], |n, _| successors(n), |n| n == &GOAL),
+            None
+        );
     }
 
     #[test]

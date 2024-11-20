@@ -99,7 +99,7 @@ fn test_gps() {
 
     let r = dijkstra(
         [start],
-        |city| successor_distances[city].clone(),
+        |city, _| successor_distances[city].clone(),
         |city| city == &goal,
     );
     let (path, cost_dijkstra) = r.expect("no path found with dijkstra");

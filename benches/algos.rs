@@ -64,7 +64,7 @@ fn corner_to_corner_bfs(c: &mut Criterion) {
     c.bench_function("corner_to_corner_bfs", |b| {
         b.iter(|| {
             assert_ne!(
-                bfs(&Pt::new(0, 0), successors, |n| n.x == 64 && n.y == 64,),
+                bfs([Pt::new(0, 0)], successors, |n| n.x == 64 && n.y == 64,),
                 None
             )
         })
@@ -87,8 +87,8 @@ fn corner_to_corner_dijkstra(c: &mut Criterion) {
         b.iter(|| {
             assert_ne!(
                 dijkstra(
-                    &Pt::new(0, 0),
-                    |n| successors(n).into_iter().map(|n| (n, 1)),
+                    [Pt::new(0, 0)],
+                    |n, _| successors(n).into_iter().map(|n| (n, 1)),
                     |n| n.x == 64 && n.y == 64,
                 ),
                 None
@@ -158,7 +158,7 @@ fn no_path_astar(c: &mut Criterion) {
 
 fn no_path_bfs(c: &mut Criterion) {
     c.bench_function("no_path_bfs", |b| {
-        b.iter(|| assert_eq!(bfs(&Pt::new(2, 3), successors, |_| false), None))
+        b.iter(|| assert_eq!(bfs([Pt::new(2, 3)], successors, |_| false), None))
     });
 }
 
@@ -167,8 +167,8 @@ fn no_path_dijkstra(c: &mut Criterion) {
         b.iter(|| {
             assert_eq!(
                 dijkstra(
-                    &Pt::new(2, 3),
-                    |n| successors(n).into_iter().map(|n| (n, 1)),
+                    [Pt::new(2, 3)],
+                    |n, _| successors(n).into_iter().map(|n| (n, 1)),
                     |_| false,
                 ),
                 None

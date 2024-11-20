@@ -85,7 +85,7 @@ fn main() {
             assert_eq!(
                 dijkstra(
                     [start.clone()],
-                    |n| graph[n].iter().cloned(),
+                    |n, _| graph[n].iter().cloned(),
                     |n| n == target
                 )
                 .unwrap()
