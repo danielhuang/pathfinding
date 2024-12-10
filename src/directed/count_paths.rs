@@ -55,17 +55,21 @@ where
 /// );
 /// assert_eq!(n, 3432);
 /// ```
-pub fn count_paths<T, FN, IN, FS>(start: T, mut successors: FN, mut success: FS) -> usize
+pub fn count_paths<T, FN, IN, FS>(
+    start: impl IntoIterator<Item = T>,
+    mut successors: FN,
+    mut success: FS,
+) -> usize
 where
     T: Eq + Hash,
     FN: FnMut(&T) -> IN,
     IN: IntoIterator<Item = T>,
     FS: FnMut(&T) -> bool,
 {
-    cached_count_paths(
-        start,
-        &mut successors,
-        &mut success,
-        &mut FxHashMap::default(),
-    )
+    let mut cache = FxHashMap::default();
+
+    start
+        .into_iter()
+        .map(|start| cached_count_paths(start, &mut successors, &mut success, &mut cache))
+        .sum()
 }

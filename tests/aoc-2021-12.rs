@@ -24,11 +24,11 @@ fn solve(small_cave_twice: bool) -> usize {
     let map = input(include_str!("aoc-2021-12.txt"));
 
     count_paths(
-        State {
+        [State {
             current: "start",
             small_caves: Vec::new(),
             small_cave_twice,
-        },
+        }],
         |c| {
             map[&c.current]
                 .iter()

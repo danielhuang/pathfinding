@@ -12,7 +12,7 @@ fn part2() {
     let &last = adapters.last().unwrap();
 
     let n = count_paths(
-        0,
+        [0],
         |&x| {
             adapters
                 .iter()
